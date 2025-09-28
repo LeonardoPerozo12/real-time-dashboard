@@ -7,7 +7,7 @@ import {
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 } from "chart.js";
 
 ChartJS.register(
@@ -20,9 +20,12 @@ ChartJS.register(
   Legend
 );
 
+
+
 const StockChart = ({ data }) => {
+  console.log("StockChart data:", data);
   const chartData = {
-    labels: data.map((d) => new Date(d.timestamp).toLocaleTimeString()),
+    labels: data.map((d) => new Date(d.date).toLocaleDateString()), // <-- usar "date"
     datasets: [
       {
         label: "Stock Price",

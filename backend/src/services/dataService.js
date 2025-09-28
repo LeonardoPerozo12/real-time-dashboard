@@ -1,15 +1,16 @@
-// backend/src/dataService.js
 import fetch from "node-fetch";
 
-const SYMBOL = "AAPL";
-
-export async function getStockData() {
+export async function getStockData(symbol) {
   const API_KEY = process.env.TWELVEDATA_API_KEY?.trim();
+
+  if (!symbol || typeof symbol !== "string") {
+    throw new Error("Symbol parameter is required and must be a string");
+  }
 
   if (!API_KEY) {
     console.error("TwelveData API key is not defined!");
     return {
-      symbol: SYMBOL,
+      symbol,
       price: "N/A",
       timestamp: new Date().toISOString(),
     };
@@ -17,43 +18,50 @@ export async function getStockData() {
 
   try {
     const res = await fetch(
-      `https://api.twelvedata.com/time_series?symbol=${SYMBOL}&interval=1min&outputsize=1&apikey=${API_KEY}`
+      `https://api.twelvedata.com/quote?symbol=${encodeURIComponent(
+        symbol
+      )}&apikey=${API_KEY}`
     );
 
     if (!res.ok) {
       console.error("HTTP error from TwelveData:", res.status);
       return {
-        symbol: SYMBOL,
+        symbol,
         price: "N/A",
         timestamp: new Date().toISOString(),
       };
     }
 
     const data = await res.json();
-
-    // 🔹 Print the full JSON response from TwelveData!!!
-    console.log("TwelveData API response:", JSON.stringify(data, null, 2));
+    console.log(`TwelveData API response for ${symbol}:`, data);
 
     if (data.status === "error") {
       console.error("TwelveData API error:", data);
       return {
-        symbol: SYMBOL,
+        symbol,
         price: "N/A",
         timestamp: new Date().toISOString(),
       };
     }
 
-    const latest = data.values[0];
-
     return {
-      symbol: SYMBOL,
-      price: parseFloat(latest.close),
-      timestamp: latest.datetime,
+      symbol: data.symbol,
+      name: data.name,
+      currency: data.currency,
+      date: data.datetime,
+      open: parseFloat(data.open),
+      high: parseFloat(data.high),
+      low: parseFloat(data.low), 
+      close: parseFloat(data.close),
+      price: parseFloat(data.close),
+      change: parseFloat(data.change),
+      percent_change: parseFloat(data.percent_change),
+      volume: parseInt(data.volume, 10),
     };
   } catch (err) {
     console.error("Error fetching stock data:", err);
     return {
-      symbol: SYMBOL,
+      symbol,
       price: "N/A",
       timestamp: new Date().toISOString(),
     };
