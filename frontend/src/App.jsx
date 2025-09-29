@@ -36,33 +36,36 @@ function App() {
 
   return (
     <ToastProvider wsUrl={`${import.meta.env.VITE_BACKEND_WS}`}>
-      <div className="min-h-screen bg-gray-100  p-6">
+      <div className="min-h-screen bg-gray-100 p-6 mb-8">
         <Header />
+
         {/* Stats */}
         <StatsGrid quote={quote} />
 
-        <div className="flex items-center mt-6 space-x-4">
-          {/* Search Bar */}
-          <SearchBar onSelect={handleSelectSymbol} reset={searchReset} />
+        {/* Search + Buttons */}
+        <div className="flex flex-col sm:flex-row items-center mt-6 space-y-2 sm:space-y-0 sm:space-x-4 w-full max-w-full">
+          <SearchBar className="w-full sm:w-auto" onSelect={handleSelectSymbol} reset={searchReset} />
 
-          <button
-            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
-            onClick={handleClear}
-          >
-            Clear
-          </button>
-          <button
-            className="px-4 py-2 bg-yellow-500 text-white rounded"
-            onClick={() => dashboardRef.current?.pause()}
-          >
-            Pause Stream
-          </button>
-          <button
-            className="px-4 py-2 bg-green-500 text-white rounded"
-            onClick={() => dashboardRef.current?.resume()}
-          >
-            Resume Stream
-          </button>
+          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
+            <button
+              className="w-full sm:w-auto px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+              onClick={handleClear}
+            >
+              Clear
+            </button>
+            <button
+              className="w-full sm:w-auto px-4 py-2 bg-yellow-500 text-white rounded"
+              onClick={() => dashboardRef.current?.pause()}
+            >
+              Pause Stream
+            </button>
+            <button
+              className="w-full sm:w-auto px-4 py-2 bg-green-500 text-white rounded"
+              onClick={() => dashboardRef.current?.resume()}
+            >
+              Resume Stream
+            </button>
+          </div>
         </div>
 
         {/* Line Chart */}
