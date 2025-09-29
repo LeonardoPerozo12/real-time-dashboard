@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: dashboard-backend
+    ports:
+      - "3000:3000"  
+    env_file:
+      - ./backend/.env
+    networks:
+      - dashboard-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: dashboard-frontend
+    ports:
+      - "80:80"
+    environment:
+      - VITE_BACKEND_HTTP=http://dashboard-backend:3000
+      - VITE_BACKEND_WS=ws://dashboard-backend:3000
+    networks:
+      - dashboard-network
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+networks:
+  dashboard-network:
+    driver: bridge

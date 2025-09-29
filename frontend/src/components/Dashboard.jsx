@@ -1,4 +1,3 @@
-// Dashboard.jsx
 import { useEffect, useState, useRef, useImperativeHandle, forwardRef } from "react";
 import StockChart from "./StockChart";
 import ConnectionStatus from "./ConnectionStatus";
@@ -10,11 +9,11 @@ const Dashboard = forwardRef(({ symbol, onStockUpdate }, ref) => {
 
   const wsRef = useRef(null);
   const reconnectRef = useRef(null);
-  const manuallyPausedRef = useRef(false); 
+  const manuallyPausedRef = useRef(false);
+  const lastUpdateRef = useRef(0);
 
   useImperativeHandle(ref, () => ({
     clearData: () => {
-      console.log("Clearing & pausing Dashboard...");
       setData([]);
       setPaused(true);
       manuallyPausedRef.current = true;
@@ -28,29 +27,33 @@ const Dashboard = forwardRef(({ symbol, onStockUpdate }, ref) => {
       onStockUpdate?.(null);
     },
     resume: () => {
-      console.log("Resuming Dashboard...");
       setPaused(false);
-      manuallyPausedRef.current = false; 
+      manuallyPausedRef.current = false;
     }
   }));
 
   useEffect(() => {
     if (!symbol) return;
 
-    if (manuallyPausedRef.current) manuallyPausedRef.current = false; // desbloquea clear
+    if (manuallyPausedRef.current) manuallyPausedRef.current = false;
 
     setPaused(false);
     setData([]);
+
+    const now = Date.now();
+    if (now - lastUpdateRef.current < 30000) return; // ignora si pasó <30s
+
     fetch(`${import.meta.env.VITE_BACKEND_HTTP}/api/stocks?symbol=${symbol}`)
       .then(res => res.json())
       .then(initialData => {
         setData([initialData]);
         onStockUpdate?.(initialData);
+        lastUpdateRef.current = Date.now();
       })
       .catch(console.error);
   }, [symbol]);
 
-  // WebSocket
+  // websocket connection with throttle
   useEffect(() => {
     if (!symbol || paused) return;
 
@@ -75,8 +78,12 @@ const Dashboard = forwardRef(({ symbol, onStockUpdate }, ref) => {
       ws.onmessage = (event) => {
         const message = JSON.parse(event.data);
         if (message.type === "stock_update" && message.payload.symbol === symbol) {
+          const now = Date.now();
+          if (now - lastUpdateRef.current < 30000) return; 
+          
           setData(prev => [...prev.slice(-49), message.payload]);
           onStockUpdate?.(message.payload);
+          lastUpdateRef.current = now;
         }
       };
     };

@@ -1,10 +1,12 @@
-import { useState, useEffect } from "react";
-import localSymbols from "../data/symbols.json";
+import { useState, useEffect, useRef } from "react";
+import localSymbols from "../data/symbols";
 
 export default function SearchBar({ onSelect, reset }) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
+  const debounceRef = useRef(null);
 
+  // Reset the input and results when `reset` prop changes
   useEffect(() => {
     if (reset) {
       setQuery("");
@@ -12,15 +14,14 @@ export default function SearchBar({ onSelect, reset }) {
     }
   }, [reset]);
 
-  const handleSearch = async (q) => {
-    setQuery(q);
-
+  // Function to search stocks
+  const searchStocks = async (q) => {
     if (!q) {
       setResults([]);
       return;
     }
 
-    // Local Filtering
+    // Local filtering first
     const localMatches = localSymbols.filter(
       (s) =>
         s.symbol.toLowerCase().includes(q.toLowerCase()) ||
@@ -29,7 +30,7 @@ export default function SearchBar({ onSelect, reset }) {
 
     setResults(localMatches);
 
-    // If there are few matches, just fetch from the API
+    // Only fetch from API if there are fewer than 3 local matches
     if (localMatches.length < 3) {
       try {
         const res = await fetch(
@@ -37,7 +38,7 @@ export default function SearchBar({ onSelect, reset }) {
         );
         const apiResults = await res.json();
 
-        // Combine local + API results
+        // Merge local matches and API results
         const combined = [
           ...localMatches,
           ...apiResults.data.map((r) => ({
@@ -54,6 +55,20 @@ export default function SearchBar({ onSelect, reset }) {
     }
   };
 
+  // Debounced input change handler
+  const handleChange = (e) => {
+    const value = e.target.value;
+    setQuery(value);
+
+    // Clear previous debounce timer
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    // Set a new debounce timer
+    debounceRef.current = setTimeout(() => {
+      searchStocks(value);
+    }, 500); // 500ms debounce
+  };
+
   return (
     <div className="relative w-80">
       <input
@@ -61,7 +76,7 @@ export default function SearchBar({ onSelect, reset }) {
         className="w-full border rounded-xl p-2"
         placeholder="Search stock symbol..."
         value={query}
-        onChange={(e) => handleSearch(e.target.value)}
+        onChange={handleChange}
       />
 
       {results.length > 0 && (

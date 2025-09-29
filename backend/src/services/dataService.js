@@ -51,12 +51,14 @@ export async function getStockData(symbol) {
       date: data.datetime,
       open: parseFloat(data.open),
       high: parseFloat(data.high),
-      low: parseFloat(data.low), 
+      low: parseFloat(data.low),
       close: parseFloat(data.close),
       price: parseFloat(data.close),
       change: parseFloat(data.change),
       percent_change: parseFloat(data.percent_change),
       volume: parseInt(data.volume, 10),
+      previous_close: parseFloat(data.previous_close),
+      average_volume: parseInt(data.average_volume, 10),
     };
   } catch (err) {
     console.error("Error fetching stock data:", err);

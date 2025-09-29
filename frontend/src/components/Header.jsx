@@ -1,7 +1,7 @@
 export default function Header() {
   return (
-    <header className="flex justify-between items-center mb-6">
-      <h1 className="text-2xl font-bold">Real-time Dashboard</h1>
+    <header className="w-full p-4 pl-0 flex justify-between items-center z-50">
+      <h1 className="text-2xl font-bold">Real Time Dashboard</h1>
       <div className="flex items-center space-x-4">
         <div className="flex items-center space-x-2">
           <img

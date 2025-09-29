@@ -1,9 +1,10 @@
-export default function ChartCard({ title, children, value, className = "" }) {
+export default function ChartCard({ title, children, className = "" }) {
   return (
-    <div className={`bg-white shadow rounded-lg p-4 ${className}`}>
-      <h2 className="text-gray-700 font-bold mb-4">{title}</h2>
-      {value && <p className="text-3xl font-bold mb-4">{value}</p>}
-      <div className="h-full">{children}</div>
+    <div
+      className={`p-4 bg-white rounded-lg shadow relative overflow-hidden ${className}`}
+    >
+      {title && <h3 className="text-lg font-semibold mb-2">{title}</h3>}
+      <div className="w-full h-full">{children}</div>
     </div>
   );
 }

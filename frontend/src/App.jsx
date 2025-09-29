@@ -1,11 +1,10 @@
-// App.jsx
 import { useState, useRef } from "react";
 import Header from "./components/Header";
 import StatsGrid from "./components/StatsGrid";
 import Dashboard from "./components/Dashboard";
 import SearchBar from "./components/SearchBar";
 import ChartCard from "./components/ChartCard";
-import BarChart from "./components/BarChart";
+import AdditionalCharts from "./components/AdditionalCharts";
 
 function App() {
   const [selectedSymbol, setSelectedSymbol] = useState(null);
@@ -29,17 +28,14 @@ function App() {
 
   const handleClear = () => {
     dashboardRef.current?.clearData();
-    setSearchReset((prev) => !prev); 
+    setSearchReset((prev) => !prev);
     setQuote(null);
     setSelectedSymbol(null);
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-gray-100  p-6">
       <Header />
-
-      <h2 className="text-2xl mb-4">Dashboard</h2>
-
       {/* Stats */}
       <StatsGrid quote={quote} />
 
@@ -55,17 +51,13 @@ function App() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-        {/* Line Chart */}
-        <ChartCard title="Live Stock Price" className="md:col-span-2 h-96">
-          <Dashboard ref={dashboardRef} symbol={selectedSymbol} />
-        </ChartCard>
+      {/* Line Chart */}
+      <ChartCard title="Live Stock Price" className="md:col-span-2 h-96 mt-6">
+        <Dashboard ref={dashboardRef} symbol={selectedSymbol} />
+      </ChartCard>
 
-        {/* Bar Chart */}
-        <ChartCard title="Daily Stock Overview" className="h-96">
-          <BarChart symbol={selectedSymbol} initialStock={quote} />
-        </ChartCard>
-      </div>
+      {/* Additional Charts: barra + dos pie charts */}
+      <AdditionalCharts quote={quote} symbol={selectedSymbol} />
     </div>
   );
 }
