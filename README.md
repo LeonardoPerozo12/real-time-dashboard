@@ -83,18 +83,13 @@ Docker Compose uses **`docker-compose.yml`** to wire both services together.
 ### REST Endpoints
 All backend endpoints are prefixed with `/api` (if configured; otherwise as is):
 
-| Endpoint | Method | Query Parameters | Description |
-|----------|--------|-----------------|-------------|
-| `/stocks` | GET | `symbol` (required) | Fetch current stock data for a given symbol. Returns JSON. |
-| `/symbol_search` | GET | `query` (required) | Search for stock symbols matching the query. Returns JSON. |
-| `/health` | GET | - | Health check endpoint. Returns `{ status: "ok" }`. |
-| `/broadcast`| POST | - | Allows broadcasting custom messages to all connected clients via WebSocket.|
+| Endpoint         | Method | Query / Body                                      | Description                                                      | Example Request                                                                                         |
+| ---------------- | ------ | ------------------------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `/stocks`        | GET    | `symbol=AAPL`                                     | Fetch current stock data for the given symbol.                   | `GET http://localhost:3000/stocks?symbol=AAPL`                                                          |
+| `/symbol_search` | GET    | `query=AA`                                        | Search for stock symbols matching the query.                     | `GET http://localhost:3000/symbol_search?query=AA`                                                      |
+| `/api/broadcast` | POST   | `{ "message": "Stock AAPL exceeded threshold!" }` | Send a broadcast message to all connected clients via WebSocket. | `POST http://localhost:3000/api/broadcast` <br> Body: `{ "message": "Stock AAPL exceeded threshold!" }` |
 
-| Endpoint         | Method | Query / Body                                      | Description                                                      |
-| ---------------- | ------ | ------------------------------------------------- | ---------------------------------------------------------------- |
-| `/stocks`        | GET    | `symbol=AAPL`                                     | Fetch current stock data for the given symbol.                   |
-| `/symbol_search` | GET    | `query=AA`                                        | Search for stock symbols matching the query.                     |
-| `/api/broadcast` | POST   | `{ "message": "Stock AAPL exceeded threshold!" }` | Send a broadcast message to all connected clients via WebSocket. |
+
 
   {
      "message": "Server will be down for maintenance in 30 minutes"
