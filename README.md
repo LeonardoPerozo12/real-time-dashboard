@@ -90,6 +90,11 @@ All backend endpoints are prefixed with `/api` (if configured; otherwise as is):
 | `/health` | GET | - | Health check endpoint. Returns `{ status: "ok" }`. |
 | `/broadcast`| POST | - | Allows broadcasting custom messages to all connected clients via WebSocket.|
 
+| Endpoint         | Method | Query / Body                                      | Description                                                      |
+| ---------------- | ------ | ------------------------------------------------- | ---------------------------------------------------------------- |
+| `/stocks`        | GET    | `symbol=AAPL`                                     | Fetch current stock data for the given symbol.                   |
+| `/symbol_search` | GET    | `query=AA`                                        | Search for stock symbols matching the query.                     |
+| `/api/broadcast` | POST   | `{ "message": "Stock AAPL exceeded threshold!" }` | Send a broadcast message to all connected clients via WebSocket. |
 
   {
      "message": "Server will be down for maintenance in 30 minutes"
