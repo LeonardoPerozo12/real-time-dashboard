@@ -40,7 +40,7 @@ const Dashboard = forwardRef(({ symbol, onStockUpdate }, ref) => {
       // Handle stock update messages
       if (message.type === "stock_update" && message.payload.symbol === symbol) {
         const now = Date.now();
-        if (now - lastUpdateRef.current < 30000) return; // throttle updates to 30s
+        if (now - lastUpdateRef.current < 8000) return; // throttle updates to 8s 
         setData(prev => [...prev.slice(-49), message.payload]);
         onStockUpdate?.(message.payload);
         lastUpdateRef.current = now;

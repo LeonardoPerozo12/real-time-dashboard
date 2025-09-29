@@ -6,6 +6,8 @@ It displays **live stock price updates**, fetched from the TwelveData API, and d
 Disconnect & Reconnect
 
 Users can safely disconnect and reconnect from the live data stream without breaking the dashboard:
+
+The app currently throttles the API calls, because the api is free and has a limited amount of calls
 ---
 
 ## Features
