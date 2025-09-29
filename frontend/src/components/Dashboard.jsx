@@ -6,6 +6,7 @@ const Dashboard = forwardRef(({ symbol, onStockUpdate }, ref) => {
   const [data, setData] = useState([]);
   const [connected, setConnected] = useState(false);
   const [paused, setPaused] = useState(false);
+  const [timer, setTimer] = useState(15);
 
   const wsRef = useRef(null);
   const reconnectRef = useRef(null);
@@ -41,9 +42,7 @@ const Dashboard = forwardRef(({ symbol, onStockUpdate }, ref) => {
       if (message.type === "stock_update" && message.payload.symbol === symbol) {
         const now = Date.now();
         if (now - lastUpdateRef.current < 8000) return; // throttle updates to 8s 
-        setData(prev => [...prev.slice(-49), message.payload]);
-        onStockUpdate?.(message.payload);
-        lastUpdateRef.current = now;
+        handleNewData(message.payload);
       }
 
       // Handle broadcast messages 
@@ -76,6 +75,24 @@ const Dashboard = forwardRef(({ symbol, onStockUpdate }, ref) => {
     }
   }));
 
+  // Timer countdown effect
+  useEffect(() => {
+    if (!symbol || paused) return;
+    setTimer(15);
+    const interval = setInterval(() => {
+      setTimer((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [symbol, paused, lastUpdateRef.current]);
+
+  // Reset timer when new data arrives
+  const handleNewData = (payload) => {
+    setTimer(15);
+    setData(prev => [...prev.slice(-49), payload]);
+    onStockUpdate?.(payload);
+    lastUpdateRef.current = Date.now();
+  };
+
   // Initial data fetch when the symbol changes
   useEffect(() => {
     if (!symbol) return;
@@ -86,6 +103,7 @@ const Dashboard = forwardRef(({ symbol, onStockUpdate }, ref) => {
     fetch(`${import.meta.env.VITE_BACKEND_HTTP}/api/stocks?symbol=${symbol}`)
       .then(res => res.json())
       .then(initialData => {
+        setTimer(15);
         setData([initialData]);
         onStockUpdate?.(initialData);
         lastUpdateRef.current = Date.now();
@@ -110,6 +128,7 @@ const Dashboard = forwardRef(({ symbol, onStockUpdate }, ref) => {
   return (
     <div className="flex flex-col h-full w-full">
       <ConnectionStatus connected={connected && !paused} />
+      <div className="text-s text-gray-500 mb-2">Refresh in: {timer}s</div>
       <StockChart data={data} />
     </div>
   );
