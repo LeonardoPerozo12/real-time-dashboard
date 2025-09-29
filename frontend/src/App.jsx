@@ -5,6 +5,7 @@ import Dashboard from "./components/Dashboard";
 import SearchBar from "./components/SearchBar";
 import ChartCard from "./components/ChartCard";
 import AdditionalCharts from "./components/AdditionalCharts";
+import ToastProvider from "./components/ToastProvider";
 
 function App() {
   const [selectedSymbol, setSelectedSymbol] = useState(null);
@@ -34,31 +35,45 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100  p-6">
-      <Header />
-      {/* Stats */}
-      <StatsGrid quote={quote} />
+    <ToastProvider wsUrl={`${import.meta.env.VITE_BACKEND_WS}`}>
+      <div className="min-h-screen bg-gray-100  p-6">
+        <Header />
+        {/* Stats */}
+        <StatsGrid quote={quote} />
 
-      <div className="flex items-center mt-6 space-x-4">
-        {/* Search Bar */}
-        <SearchBar onSelect={handleSelectSymbol} reset={searchReset} />
+        <div className="flex items-center mt-6 space-x-4">
+          {/* Search Bar */}
+          <SearchBar onSelect={handleSelectSymbol} reset={searchReset} />
 
-        <button
-          className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
-          onClick={handleClear}
-        >
-          Clear
-        </button>
+          <button
+            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+            onClick={handleClear}
+          >
+            Clear
+          </button>
+          <button
+            className="px-4 py-2 bg-yellow-500 text-white rounded"
+            onClick={() => dashboardRef.current?.pause()}
+          >
+            Pause Stream
+          </button>
+          <button
+            className="px-4 py-2 bg-green-500 text-white rounded"
+            onClick={() => dashboardRef.current?.resume()}
+          >
+            Resume Stream
+          </button>
+        </div>
+
+        {/* Line Chart */}
+        <ChartCard title="Live Stock Price" className="md:col-span-2 h-96 mt-6">
+          <Dashboard ref={dashboardRef} symbol={selectedSymbol} />
+        </ChartCard>
+
+        {/* Additional Charts: barra + dos pie charts */}
+        <AdditionalCharts quote={quote} symbol={selectedSymbol} />
       </div>
-
-      {/* Line Chart */}
-      <ChartCard title="Live Stock Price" className="md:col-span-2 h-96 mt-6">
-        <Dashboard ref={dashboardRef} symbol={selectedSymbol} />
-      </ChartCard>
-
-      {/* Additional Charts: barra + dos pie charts */}
-      <AdditionalCharts quote={quote} symbol={selectedSymbol} />
-    </div>
+    </ToastProvider>
   );
 }
 

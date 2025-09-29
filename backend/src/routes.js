@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { getStockData } from "./services/dataService.js";
 import { symbolSearch } from "./services/symbolSearch.js";
+import { broadcast } from "./services/broadcast.js";
 
 const router = Router();
 
@@ -36,6 +37,15 @@ router.get("/symbol_search", async (req, res) => {
     console.error("Error in /symbol_search:", err.message);
     res.status(500).json({ error: err.message || "Failed to fetch symbol search" });
   }
+});
+
+// Alerts broadcast
+router.post("/broadcast", (req, res) => {
+    const { message } = req.body;
+  if (!message) return res.status(400).json({ error: "Message is required" });
+
+  broadcast(message);
+  res.json({ status: "ok" });
 });
 
 // Health check

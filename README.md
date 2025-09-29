@@ -3,7 +3,9 @@
 A real-time stock dashboard web application built with **React (Vite)** on the frontend and **Node.js + Express + WebSocket (ws)** on the backend.  
 
 It displays **live stock price updates**, fetched from the TwelveData API, and demonstrates **real-time visualization with WebSockets**.
+Disconnect & Reconnect
 
+Users can safely disconnect and reconnect from the live data stream without breaking the dashboard:
 ---
 
 ## Features
@@ -79,8 +81,36 @@ Docker Compose uses **`docker-compose.yml`** to wire both services together.
 ## API & WebSocket Testing
 
 ### REST Endpoints
-- `GET /api/stocks` → Fetch stock data  
-- `GET /api/health` → Health check  
+All backend endpoints are prefixed with `/api` (if configured; otherwise as is):
+
+| Endpoint | Method | Query Parameters | Description |
+|----------|--------|-----------------|-------------|
+| `/stocks` | GET | `symbol` (required) | Fetch current stock data for a given symbol. Returns JSON. |
+| `/symbol_search` | GET | `query` (required) | Search for stock symbols matching the query. Returns JSON. |
+| `/health` | GET | - | Health check endpoint. Returns `{ status: "ok" }`. |
+| `/broadcast`| POST | Allows broadcasting custom messages to all connected clients via WebSocket.|
+
+**Example request:**
+GET http://localhost:3000/stocks?symbol=AAPL
+**Example symbol search:**
+GET http://localhost:3000/symbol_search?query=AA
+**Example Broadcast**
+POST http://localhost:3000/api/broadcast 
+
+  {
+     "message": "Server will be down for maintenance in 30 minutes"
+  }
 
 ### WebSocket
 - Connect to: ws://your_backend_route:PORT
+ On connection, you receive real-time messages of the form:
+```json
+{
+  "type": "stock_update",
+  "payload": {
+    "symbol": "AAPL",
+    "price": 255.46,
+    "timestamp": "2025-09-26 15:59:00"
+  }
+}
+```
