@@ -88,7 +88,7 @@ All backend endpoints are prefixed with `/api` (if configured; otherwise as is):
 | `/stocks` | GET | `symbol` (required) | Fetch current stock data for a given symbol. Returns JSON. |
 | `/symbol_search` | GET | `query` (required) | Search for stock symbols matching the query. Returns JSON. |
 | `/health` | GET | - | Health check endpoint. Returns `{ status: "ok" }`. |
-| `/broadcast`| POST | Allows broadcasting custom messages to all connected clients via WebSocket.|
+| `/broadcast`| POST | - | Allows broadcasting custom messages to all connected clients via WebSocket.|
 
 **Example request:**
 GET http://localhost:3000/stocks?symbol=AAPL
